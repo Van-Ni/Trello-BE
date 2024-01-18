@@ -4,6 +4,8 @@ import { boardModel } from "../models/boardModel"
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { BoardResponse, Card, Column } from "../utils/interfaces/boardInterface";
+import ApiError from "utils/ApiError";
+import { StatusCodes } from "http-status-codes";
 
 const createNew = async (boardData: any) => {
   try {
@@ -22,12 +24,15 @@ const getDetails = async (id: ObjectId) => {
   try {
     const board: BoardResponse = await boardModel.getDetails(id);
 
+    if(!board) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Board not found!")
+    }
+    
     const resBoard = _.cloneDeep(board);
-
     resBoard.columns = resBoard?.columns?.map((column: Column) => ({
       ...column,
       cards: (board.cards ?? []).filter((card: Card) => card.columnId === column._id),
-    }));
+    })) || [];
 
     delete resBoard.cards;
 

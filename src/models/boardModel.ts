@@ -82,7 +82,7 @@ const getDetails = async (boardId: ObjectId): Promise<Board> => {
                     }
                 },
             ]).toArray(); // #mongodb: toArray()
-        return foundBoard[0] || {};
+        return foundBoard[0] || null;
     } catch (error) {
         throw new Error(error as string);
     }
