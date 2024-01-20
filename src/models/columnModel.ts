@@ -31,7 +31,9 @@ const validateColumnData = async (columnData: any) => {
 const createNew = async (columnData: any) => {
   try {
     const validatedData = await validateColumnData(columnData);
-    const createdColumn = await GET_DB().collection(COLUMN_COLLECTION_NAME).insertOne(validatedData);
+    const createdColumn = await GET_DB().collection(COLUMN_COLLECTION_NAME).insertOne(
+      { ...validatedData, boardId: new ObjectId(validatedData.boardId) }
+    );
     return createdColumn;
   } catch (error) {
     throw new Error(error as string);
@@ -47,9 +49,27 @@ const findColumnById = async (columnId: ObjectId) => {
     throw new Error(error as string);
   }
 };
+
+const pushCardOrderIds = async (columnId: ObjectId, cardId: ObjectId) => {
+  try {
+    const result = await GET_DB().collection(COLUMN_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: columnId },
+        { $push: { cardOrderIds: new ObjectId(cardId) } } as any,
+        { returnDocument: 'after' } // Trả về tài liệu đã được cập nhật
+      );
+    if (result?.value) {
+      console.log(result.value);
+    }
+    return result?.value;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
 export const columnModel = {
   COLUMN_COLLECTION_NAME,
   COLUMN_COLLECTION_SCHEMA,
   createNew,
-  findColumnById
+  findColumnById,
+  pushCardOrderIds
 }

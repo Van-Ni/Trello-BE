@@ -28,7 +28,13 @@ const validateCardData = async (cardData: any) => {
 const createNew = async (cardData: any) => {
   try {
     const validatedData = await validateCardData(cardData);
-    const createdCard = await GET_DB().collection(CARD_COLLECTION_NAME).insertOne(validatedData);
+    const createdCard = await GET_DB().collection(CARD_COLLECTION_NAME).insertOne(
+      {
+        ...validatedData,
+        boardId: new ObjectId(validatedData.boardId),
+        columnId: new ObjectId(validatedData.columnId)
+      }
+    );
     return createdCard;
   } catch (error) {
     throw new Error(error as string);

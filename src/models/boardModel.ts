@@ -87,11 +87,30 @@ const getDetails = async (boardId: ObjectId): Promise<Board> => {
         throw new Error(error as string);
     }
 };
+
+const pushColumnOrderIds = async (boardId: ObjectId, columnId: ObjectId) => {
+    try {
+        // console.log(boardId, typeof boardId);
+        const result = await GET_DB().collection(BOARD_COLLECTION_NAME)
+            .findOneAndUpdate(
+                { _id: boardId },
+                { $push: { columnOrderIds: new ObjectId(columnId) } } as any,
+                { returnDocument: 'after' } // Trả về tài liệu đã được cập nhật
+            );
+        if (result?.value) {
+            console.log(result.value);
+        }
+        return result?.value;
+    } catch (error) {
+        throw new Error(error as string);
+    }
+};
 export const boardModel = {
     BOARD_COLLECTION_NAME,
     BOARD_COLLECTION_SCHEMA,
     createNew,
     findBoardById,
-    getDetails
+    getDetails,
+    pushColumnOrderIds
 }
 

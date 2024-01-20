@@ -1,3 +1,4 @@
+import { boardModel } from "../models/boardModel";
 import { columnModel } from "../models/columnModel"
 
 const createNew = async (columnData: any) => {
@@ -7,6 +8,12 @@ const createNew = async (columnData: any) => {
         };
         const createdcolumn = await columnModel.createNew(newcolumn);
         const foundcolumn = await columnModel.findColumnById(createdcolumn.insertedId);
+        if (foundcolumn) {
+            // handle cards data 
+            foundcolumn.cards = [];
+            // update columnOrderIds in board collections
+            await boardModel.pushColumnOrderIds(foundcolumn.boardId, createdcolumn.insertedId);
+        }
         return foundcolumn;
     } catch (error) {
         throw error;

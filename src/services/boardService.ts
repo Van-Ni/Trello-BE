@@ -24,14 +24,14 @@ const getDetails = async (id: ObjectId) => {
   try {
     const board: BoardResponse = await boardModel.getDetails(id);
 
-    if(!board) {
+    if (!board) {
       throw new ApiError(StatusCodes.NOT_FOUND, "Board not found!")
     }
-    
+
     const resBoard = _.cloneDeep(board);
     resBoard.columns = resBoard?.columns?.map((column: Column) => ({
       ...column,
-      cards: (board.cards ?? []).filter((card: Card) => card.columnId === column._id),
+      cards: (board.cards ?? []).filter((card: Card) => card.columnId.toString() === column._id.toString()),
     })) || [];
 
     delete resBoard.cards;
