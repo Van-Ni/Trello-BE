@@ -16,10 +16,7 @@ Router.route('/')
 
 Router.route('/:id')
   .get(boardController.getDetails)
-  .put((req: Request, res: Response) => {
-    const id = req.params.id;
-    res.status(StatusCodes.OK).send(`PUT /v1/boards/${id}`);
-  })
+  .put(boardValidation.update, boardController.update)
   .delete((req: Request, res: Response) => {
     const id = req.params.id;
     res.status(StatusCodes.OK).send(`DELETE /v1/boards/${id}`);

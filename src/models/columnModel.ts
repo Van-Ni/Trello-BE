@@ -58,10 +58,10 @@ const pushCardOrderIds = async (columnId: ObjectId, cardId: ObjectId) => {
         { $push: { cardOrderIds: new ObjectId(cardId) } } as any,
         { returnDocument: 'after' } // Trả về tài liệu đã được cập nhật
       );
-    if (result?.value) {
-      console.log(result.value);
+    if (result) {
+      console.log(result);
     }
-    return result?.value;
+    return result;
   } catch (error) {
     throw new Error(error as string);
   }

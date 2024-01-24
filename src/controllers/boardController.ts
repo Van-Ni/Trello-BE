@@ -36,8 +36,29 @@ const getDetails = async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 };
+const update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const board = await boardService.update(new ObjectId(id), req.body);
+
+        if (!board) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                status: StatusCodes.NOT_FOUND,
+                message: 'Board not found',
+            });
+        }
+
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: board,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const boardController = {
     createNew,
-    getDetails
+    getDetails,
+    update
 }

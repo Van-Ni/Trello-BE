@@ -23,6 +23,10 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
     updatedAt: Joi.date().timestamp('javascript').default(null),
     _destroy: Joi.boolean().default(false)
 })
+
+// Chỉ định ra những Fields mà chúng ta không muốn cập nhật khi update
+const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
+
 const validateBoardData = async (boardData: any) => {
     try {
         return await BOARD_COLLECTION_SCHEMA.validateAsync(boardData, { abortEarly: false });
@@ -97,20 +101,43 @@ const pushColumnOrderIds = async (boardId: ObjectId, columnId: ObjectId) => {
                 { $push: { columnOrderIds: new ObjectId(columnId) } } as any,
                 { returnDocument: 'after' } // Trả về tài liệu đã được cập nhật
             );
-        if (result?.value) {
-            console.log(result.value);
+        if (result) {
+            console.log("findOneAndUpdate", result);
         }
-        return result?.value;
+        return result;
     } catch (error) {
         throw new Error(error as string);
     }
 };
+
+const update = async (boardId: ObjectId, boardData: any) => {
+    try {
+        // filter invalid fields
+        Object.keys(boardData).forEach(fieldName => {
+            if (INVALID_UPDATE_FIELDS.includes(fieldName))
+                delete boardData[fieldName];
+        })
+        const result = await GET_DB().collection(BOARD_COLLECTION_NAME)
+            .findOneAndUpdate(
+                { _id: boardId },
+                { $set: boardData },
+                { returnDocument: 'after' } // Trả về tài liệu đã được cập nhật
+            );
+        if (result) {
+            console.log("findOneAndUpdate", result);
+        }
+        return result;
+    } catch (error) {
+        throw new Error(error as string);
+    }
+}
 export const boardModel = {
     BOARD_COLLECTION_NAME,
     BOARD_COLLECTION_SCHEMA,
     createNew,
     findBoardById,
     getDetails,
-    pushColumnOrderIds
+    pushColumnOrderIds,
+    update
 }
 
