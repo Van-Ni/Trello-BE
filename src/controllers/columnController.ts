@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from "http-status-codes";
 import { columnService } from '../services/columnService';
+import { ObjectId } from 'mongodb';
 
 const createNew = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -14,6 +15,27 @@ const createNew = async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 }
+
+const update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const updatedColumn = await columnService.update(new ObjectId(id), req.body);
+
+        if (!updatedColumn) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                status: StatusCodes.NOT_FOUND,
+                message: 'Column not found',
+            });
+        }
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: updatedColumn
+        });
+    } catch (error) {
+        next(error);
+    }
+}
 export const columnController = {
-    createNew
+    createNew,
+    update
 }

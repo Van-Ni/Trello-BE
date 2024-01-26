@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { boardModel } from "../models/boardModel";
 import { columnModel } from "../models/columnModel"
 
@@ -20,6 +21,21 @@ const createNew = async (columnData: any) => {
     }
 }
 
+const update = async (columnId: ObjectId, columnData: any) => {
+    try {
+        const updateColumnData = {
+            ...columnData,
+            updatedAt: Date.now()
+        }
+        const updatedColumn = await columnModel.update(columnId, updateColumnData);
+        return updatedColumn;
+    } catch (error) {
+        throw error;
+    }
+
+}
+
 export const columnService = {
-    createNew
+    createNew,
+    update
 }

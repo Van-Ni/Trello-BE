@@ -25,6 +25,31 @@ const createNew = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const update = async (req: Request, res: Response, next: NextFunction) => {
+    const customMessages = {
+        'string.base': '{#label} phải là một chuỗi.',
+        'string.empty': '{#label} không được để trống.',
+        'string.min': '{#label} phải chứa ít nhất {#limit} ký tự.',
+        'string.max': '{#label} không được vượt quá {#limit} ký tự.',
+    };
+
+    const correctCondition = Joi.object({
+        // nếu cần di chuyển sang board sang thì mới cần boardId
+        // boardId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+        title: Joi.string().min(3).max(50).trim().strict().messages(customMessages),
+        cardOrderIds: Joi.array().items(
+            Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
+        ).default([])
+    });
+    try {
+        await correctCondition.validateAsync(req.body, { abortEarly: false });
+        next();
+    } catch (error) {
+        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error as string).message));
+    }
+}
+
 export const columnValidation = {
-    createNew
+    createNew,
+    update
 }
