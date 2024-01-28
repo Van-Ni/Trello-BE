@@ -57,8 +57,26 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+const moveCardToAnotherColumn = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const movedCard = await boardService.moveCardToAnotherColumn(req.body);
+        if (!movedCard) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                status: StatusCodes.NOT_FOUND,
+                message: 'Board not found',
+            });
+        }
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: movedCard,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
 export const boardController = {
     createNew,
     getDetails,
-    update
+    update,
+    moveCardToAnotherColumn
 }

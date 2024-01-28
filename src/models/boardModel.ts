@@ -6,6 +6,7 @@ import { BoardType } from '../utils/constants'
 import { cardModel } from './cardModel'
 import { columnModel } from './columnModel'
 import { Board } from '../utils/interfaces/boardInterface'
+import { isEmpty } from 'lodash'
 
 // Define Collection (name & schema)
 const BOARD_COLLECTION_NAME = 'boards'
@@ -117,6 +118,11 @@ const update = async (boardId: ObjectId, boardData: any) => {
             if (INVALID_UPDATE_FIELDS.includes(fieldName))
                 delete boardData[fieldName];
         })
+
+        // related to ObjectIds
+        if (!isEmpty(boardData.columnOrderIds)) 
+            boardData.columnOrderIds = boardData.columnOrderIds.map((c: string) => new ObjectId(c));
+        
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME)
             .findOneAndUpdate(
                 { _id: boardId },

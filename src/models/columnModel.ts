@@ -4,6 +4,7 @@ import Joi from 'joi'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '../utils/validators'
 import { GET_DB } from '../config/mongodb';
 import { ObjectId } from 'mongodb';
+import { isEmpty } from 'lodash';
 
 // Define Collection (name & schema)
 const COLUMN_COLLECTION_NAME = 'columns'
@@ -76,6 +77,11 @@ const update = async (columnId: ObjectId, columnData: any) => {
       if (INVALID_UPDATE_FIELDS.includes(fieldName))
         delete columnData[fieldName];
     })
+
+    // related to ObjectIds
+    if (!isEmpty(columnData.cardOrderIds))
+      columnData.cardOrderIds = columnData.cardOrderIds.map((c: string) => new ObjectId(c));
+
     const result = await GET_DB().collection(COLUMN_COLLECTION_NAME)
       .findOneAndUpdate(
         { _id: columnId },
@@ -83,7 +89,7 @@ const update = async (columnId: ObjectId, columnData: any) => {
         { returnDocument: 'after' } // Trả về tài liệu đã được cập nhật
       );
     if (result) {
-      console.log("findOneAndUpdate", result);
+      // console.log("findOneAndUpdate", result);
     }
     return result;
   } catch (error) {

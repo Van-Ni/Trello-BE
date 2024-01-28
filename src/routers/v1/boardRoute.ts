@@ -21,4 +21,9 @@ Router.route('/:id')
     const id = req.params.id;
     res.status(StatusCodes.OK).send(`DELETE /v1/boards/${id}`);
   });
+
+Router.route('/supports/moving_card')
+  .put(boardValidation.moveCardToAnotherColumn, boardController.moveCardToAnotherColumn)
+
+
 export const boardRoute = Router;

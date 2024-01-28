@@ -4,8 +4,10 @@ import { boardModel } from "../models/boardModel"
 import { ObjectId } from "mongodb";
 import _ from "lodash";
 import { BoardResponse, Card, Column } from "../utils/interfaces/boardInterface";
-import ApiError from "utils/ApiError";
+import ApiError from "../utils/ApiError";
 import { StatusCodes } from "http-status-codes";
+import { columnModel } from "../models/columnModel";
+import { cardModel } from "../models/cardModel";
 
 const createNew = async (boardData: any) => {
   try {
@@ -48,7 +50,7 @@ const update = async (boardId: ObjectId, boardData: any) => {
       ...boardData,
       updatedAt: Date.now()
     }
-    const updatedBoard = await boardModel.update(boardId,updateBoardData);
+    const updatedBoard = await boardModel.update(boardId, updateBoardData);
     return updatedBoard;
   } catch (error) {
     throw error;
@@ -56,8 +58,24 @@ const update = async (boardId: ObjectId, boardData: any) => {
 
 }
 
+const moveCardToAnotherColumn = async (reqData: any) => {
+  try {
+    const { currentCardId, prevColumnId, prevCardOrderIds, nextColumnId, nextCardOrderIds } = reqData
+    // update cardOrderIds of prevColumn
+    await columnModel.update(new ObjectId(prevColumnId), { cardOrderIds: prevCardOrderIds })
+    // // update cardOrderIds of nextColumn
+    await columnModel.update(new ObjectId(nextColumnId), { cardOrderIds: nextCardOrderIds })
+    // // update columnId of currentCard
+    await cardModel.update(new ObjectId(currentCardId), { columnId: nextColumnId });
+    return { result: "Successfully" };
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const boardService = {
   createNew,
   getDetails,
-  update
+  update,
+  moveCardToAnotherColumn
 }

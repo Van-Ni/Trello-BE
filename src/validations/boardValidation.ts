@@ -5,7 +5,7 @@ import Joi from "joi";
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../utils/ApiError";
-import { JoiObjectId, OBJECT_ID_RULE_MESSAGE } from "utils/validators";
+import { JoiObjectId, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "utils/validators";
 
 const createNew = async (req: Request, res: Response, next: NextFunction) => {
     const customMessages = {
@@ -57,7 +57,37 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
         next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error as string).message));
     }
 }
+
+const moveCardToAnotherColumn = async (req: Request, res: Response, next: NextFunction) => {
+    const customMessages = {
+        'string.base': '{#label} phải là một chuỗi.',
+        'string.empty': '{#label} không được để trống.',
+        'string.min': '{#label} phải chứa ít nhất {#limit} ký tự.',
+        'string.max': '{#label} không được vượt quá {#limit} ký tự.',
+        'any.required': '{#label} là bắt buộc.',
+    };
+    const correctCondition = Joi.object({
+        currentCardId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+        prevColumnId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+        prevCardOrderIds: Joi.array().required().items(
+            JoiObjectId().message(OBJECT_ID_RULE_MESSAGE)
+        ),
+        nextColumnId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+        nextCardOrderIds: Joi.array().required().items(
+            JoiObjectId().message(OBJECT_ID_RULE_MESSAGE)
+        ),
+    });
+    try {
+        await correctCondition.validateAsync(req.body, {
+            abortEarly: false
+        });
+        next();
+    } catch (error) {
+        next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error as string).message));
+    }
+}
 export const boardValidation = {
     createNew,
-    update
+    update,
+    moveCardToAnotherColumn
 }
