@@ -35,7 +35,28 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
         next(error);
     }
 }
+
+const deleteItem = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const deletedColumn = await columnService.deleteItem(new ObjectId(id));
+
+        if (!deletedColumn) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                status: StatusCodes.NOT_FOUND,
+                message: 'Column not found',
+            });
+        }
+        res.status(StatusCodes.OK).json({
+            status: StatusCodes.OK,
+            data: deletedColumn
+        });
+    } catch (error) {
+        next(error);
+    }
+}
 export const columnController = {
     createNew,
-    update
+    update,
+    deleteItem
 }

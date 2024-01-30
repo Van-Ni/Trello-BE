@@ -79,10 +79,22 @@ const update = async (cardId: ObjectId, cardData: any) => {
     throw new Error(error as string);
   }
 }
+
+const deleteManyByColumnId = async (columnId: ObjectId) => {
+  try {
+    // console.log(columnId, typeof boardId);
+    const deletedColumn = await GET_DB().collection(CARD_COLLECTION_NAME).deleteMany({ columnId });
+    console.log('🚀 ~ deleteManyByColumnId ~ deletedColumn:', deletedColumn)
+    return deletedColumn;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
 export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
   createNew,
   findCardById,
-  update
+  update,
+  deleteManyByColumnId
 }

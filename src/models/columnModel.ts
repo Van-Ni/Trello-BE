@@ -96,11 +96,23 @@ const update = async (columnId: ObjectId, columnData: any) => {
     throw new Error(error as string);
   }
 }
+
+const deleteOneById = async (columnId: ObjectId) => {
+  try {
+    // console.log(columnId, typeof boardId);
+    const deletedColumn = await GET_DB().collection(COLUMN_COLLECTION_NAME).deleteOne({ _id: columnId });
+    console.log('🚀 ~ deleteOneById ~ deletedColumn:', deletedColumn)
+    return deletedColumn;
+  } catch (error) {
+    throw new Error(error as string);
+  }
+};
 export const columnModel = {
   COLUMN_COLLECTION_NAME,
   COLUMN_COLLECTION_SCHEMA,
   createNew,
   findColumnById,
   pushCardOrderIds,
-  update
+  update,
+  deleteOneById
 }
