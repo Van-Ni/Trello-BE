@@ -111,6 +111,24 @@ const pushColumnOrderIds = async (boardId: ObjectId, columnId: ObjectId) => {
     }
 };
 
+const pullColumnOrderIds = async (boardId: ObjectId, columnId: ObjectId) => {
+    try {
+        // console.log(boardId, typeof boardId);
+        const result = await GET_DB().collection(BOARD_COLLECTION_NAME)
+            .findOneAndUpdate(
+                { _id: boardId },
+                { $pull: { columnOrderIds: new ObjectId(columnId) } } as any,
+                { returnDocument: 'after' } // Trả về tài liệu đã được cập nhật
+            );
+        if (result) {
+            console.log("pullColumnOrderIds", result);
+        }
+        return result;
+    } catch (error) {
+        throw new Error(error as string);
+    }
+};
+
 const update = async (boardId: ObjectId, boardData: any) => {
     try {
         // filter invalid fields
@@ -120,9 +138,9 @@ const update = async (boardId: ObjectId, boardData: any) => {
         })
 
         // related to ObjectIds
-        if (!isEmpty(boardData.columnOrderIds)) 
+        if (!isEmpty(boardData.columnOrderIds))
             boardData.columnOrderIds = boardData.columnOrderIds.map((c: string) => new ObjectId(c));
-        
+
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME)
             .findOneAndUpdate(
                 { _id: boardId },
@@ -144,6 +162,7 @@ export const boardModel = {
     findBoardById,
     getDetails,
     pushColumnOrderIds,
-    update
+    update,
+    pullColumnOrderIds
 }
 
