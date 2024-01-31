@@ -17,7 +17,7 @@ const START_SERVER = () => {
   const app: Application = express();
 
   app.use(cors(corsOptions))
-  
+
   // #package: body-parser
   // process data sent from the client side (such as form data, JSON data)
   //parse application/x-www-form-urlencoded
@@ -35,9 +35,15 @@ const START_SERVER = () => {
     res.send(await GET_DB().listCollections().toArray())
   });
 
-  app.listen(env.APP_PORT, () => {
-    console.log(`Hello Ni handsome, Express is listening at http://localhost:${env.APP_PORT}`);
-  });
+  if (env.BUILD_MODE === 'production') {
+    app.listen(process.env.PORT, () => {
+      console.log(`Hello Ni handsome, Express is listening at ${process.env.PORT}`);
+    });
+  } else {
+    app.listen(env.LOCAL_DEV_APP_PORT, () => {
+      console.log(`Hello Ni handsome, Express is listening at http://localhost:${env.LOCAL_DEV_APP_PORT}`);
+    });
+  }
 
 
   exitHook(() => {
