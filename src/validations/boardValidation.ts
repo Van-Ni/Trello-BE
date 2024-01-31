@@ -5,7 +5,7 @@ import Joi from "joi";
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../utils/ApiError";
-import { JoiObjectId, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "utils/validators";
+import { JoiObjectId, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "../utils/validators";
 
 const createNew = async (req: Request, res: Response, next: NextFunction) => {
     const customMessages = {

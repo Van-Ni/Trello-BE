@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import { WHITELIST_DOMAINS } from '../utils/constants'
 import { env } from './enviroment'
-import ApiError from 'utils/ApiError'
+import ApiError from '../utils/ApiError'
 
 // config CORS Option 
 export const corsOptions = {
