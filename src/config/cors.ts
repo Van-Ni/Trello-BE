@@ -12,6 +12,7 @@ export const corsOptions = {
       return callback(null, true)
     }
 
+    // PRODUCTION ENVIRONMENT
     // console.log("origin: " + origin);
     // Kiểm tra xem origin có phải là domain được chấp nhận hay không
     if (WHITELIST_DOMAINS.includes(origin as string)) {
